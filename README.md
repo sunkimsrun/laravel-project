@@ -1,70 +1,133 @@
-# LARAVEL-PROJECT
+# Hospitality (Hotel Booking Management System)
 
-*Empowering Seamless Innovation Through Robust Architecture*
+A RESTful API for managing hotels, guests, rooms, bookings, and payments built with Laravel.
 
-![Last Commit](https://img.shields.io/badge/last%20commit-today-brightgreen)
-![Blade](https://img.shields.io/badge/blade-49.4%25-blue)
-![Languages](https://img.shields.io/badge/languages-5-informational)
+## ✨ Features
 
-### Built with the tools and technologies:
-![JSON](https://img.shields.io/badge/-JSON-lightgrey?logo=json)
-![Markdown](https://img.shields.io/badge/-Markdown-darkblue?logo=markdown)
-![NPM](https://img.shields.io/badge/-npm-CB3837?logo=npm)
-![Composer](https://img.shields.io/badge/-Composer-885630?logo=composer)
-![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript)
-![XML](https://img.shields.io/badge/-XML-lightgrey?logo=xml)
-![PHP](https://img.shields.io/badge/-PHP-777BB4?logo=php)
-![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite)
-![Axios](https://img.shields.io/badge/-Axios-5A29E4?logo=axios)
+- Full CRUD for Guests, Hotels, Rooms, Bookings, and Payments
+- JWT-based authentication with role-based access (Admin/User)
+- Modular MVC structure using Laravel best practices
+- Blade form interface for submitting hotel and guest entries
+- Middleware protection for authenticated routes
+- Database seeders and custom model methods
 
 ---
 
-## Table of Contents
+## 🚀 Installation Guide
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [Testing](#testing)
+1. **Clone the Repository**
+
+    ```bash
+    git clone https://github.com/sunkimsrun/laravel-project.git
+    cd laravel-project
+    ```
+2. **Composer Install**
+
+    ```bash
+    composer install
+    npm install
+    ```
+
+3. **Configure the environment**
+
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+
+4. **Set up the database connection in `.env`**
+    ```
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3310
+    DB_DATABASE=laravel
+    DB_USERNAME=root
+    DB_PASSWORD=
+    ```
+
+5. **Install and configure JWT Authentication**
+
+    ```bash
+    composer require tymon/jwt-auth
+    php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+    php artisan jwt:secret
+    ```
+
+6. 6. **Run migrations and seeders**
+
+   ```bash
+   php artisan migrate --seed
+   ```
+   
+7. **Start the development server**
+
+   ```bash
+   php -S 127.0.0.1:8888 -t public
+   ```
 
 ---
 
-## Overview
+## API Documentation
 
-Laravel Project is a full-featured starter kit that accelerates your web development process by integrating Laravel’s backend capabilities with modern frontend tools like Vite, Tailwind CSS, and Axios. It provides a solid foundation for building scalable, maintainable applications with best practices baked in.
+**Base URL:** `http://127.0.0.1:8888`
 
-### Why Laravel-Project?
+### Authentication Endpoints
 
-This project simplifies the development of complex Laravel applications by offering a cohesive architecture that includes CLI command facilitation, streamlined asset management, comprehensive testing setup, and modular service registration.
+| Method | Endpoint  | Description           |
+| ------ | --------- | --------------------- |
+| POST   | /register | Register a user/admin |
+| POST   | /login    | Login and get token   |
 
-**The core features include:**
 
-- 🧞‍♂️ **Command**: Facilitates execution of Laravel CLI commands, enabling efficient project management.
-- 🎨 **Palette**: Integrates Vite, Tailwind CSS, and Axios for a modern, reactive frontend experience.
-- 🧪 **Test**: Comes with pre-configured testing environments to ensure code quality.
-- 🧩 **Structure**: Implements a modular architecture with service providers for easy scalability.
-- 🗂️ **Data**: Supports database seeding and factories for realistic testing and development.
-- 🔐 **Security**: Includes middleware for JWT validation, safeguarding API endpoints.
+**Example: Register User**
 
----
+```json
+{
+  "name": "name",
+  "email": "name@example.com",
+  "password": "123456789"
+}
+```
 
-## Getting Started
+## Resource Endpoints
 
-### Prerequisites
+### Destinations
 
-This project requires the following dependencies:
+| Method | Endpoint     | Description        |
+| ------ | ------------ | ------------------ |
+| GET    | /guests      | List all guests    |
+| POST   | /guests      | Create a guest     |
+| PATCH  | /guests/{id} | Update guest by ID |
+| DELETE | /guests/{id} | Delete guest by ID |
 
-- **Programming Language**: PHP
-- **Package Manager**: Npm, Composer
+### Hotel
 
----
+| Method | Endpoint     | Description        |
+| ------ | ------------ | ------------------ |
+| GET    | /hotels      | List all hotels    |
+| POST   | /hotels      | Create a hotel     |
+| PATCH  | /hotels/{id} | Update hotel by ID |
+| DELETE | /hotels/{id} | Delete hotel by ID |
 
-### Installation
+### Rooms
 
-Build `laravel-project` from the source and install dependencies:
+| Method | Endpoint    | Description       |
+| ------ | ----------- | ----------------- |
+| GET    | /rooms      | List all rooms    |
+| POST   | /rooms      | Create a room     |
+| PATCH  | /rooms/{id} | Update room by ID |
+| DELETE | /rooms/{id} | Delete room by ID |
 
-1. **Clone the repository:**
+### Booking
 
-```bash
-git clone https://github.com/sunkimsrun/laravel-project
+| Method | Endpoint       | Description          |
+| ------ | -------------- | -------------------- |
+| GET    | /bookings      | List all bookings    |
+| POST   | /bookings      | Create a booking     |
+| PATCH  | /bookings/{id} | Update booking by ID |
+| DELETE | /bookings/{id} | Delete booking by ID |
+
+
+
+
+
