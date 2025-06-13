@@ -1,152 +1,59 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use App\Models\Hotel;
-use App\Models\Guest;
-use App\Models\User;
-use Firebase\JWT\JWT;
-use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Controllers\PostController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HospitalityController;
+use App\Http\Middleware\EnsureTokenIsValid;
 
-
-// ❌ This is PUBLIC – no token required (នេះមិនដំណើរការfrontendទេ)
-Route::get('/create', function () {
-    return view('create');
-});
-
-// ✅ This is PUBLIC – no token required (មួយនេះដំណើរការfrontend)
-Route::get('/create', [HospitalityController::class, 'showGuestHotelForm'])->name('form.guesthotel');
-
+// Public routes
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/post/guests', [PostController::class, 'createGuest']);
-Route::post('post/hotels', [PostController::class, 'createHotel']);
+// Route to show the form for creating guests and hotels(នេះដំណើរការបាន)
+Route::get('/create', [HospitalityController::class, 'showGuestHotelForm'])->name('form.guesthotel');
 
+// Create routes for guests and hotels from blade form (ទាំងពីរនេះមិនទាន់ដំណើរការបានទេ)
+// Route::post('/guests', [HospitalityController::class, 'createGuest']);
+// Route::post('/hotels', [HospitalityController::class, 'createHotel']);
 
+// Auth routes
+Route::post('/register', [AuthController::class, 'register'])->withoutMiddleware(EnsureTokenIsValid::class);
+Route::post('/login', [AuthController::class, 'login'])->withoutMiddleware(EnsureTokenIsValid::class);
+
+// Protected routes
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
+    // Guests
+    Route::get('/guests', [HospitalityController::class, 'getGuests']);
+    Route::post('/guests', [HospitalityController::class, 'createGuest']);
+    Route::patch('/guests/{id}', [HospitalityController::class, 'updateGuest']);
+    Route::delete('/guests/{id}', [HospitalityController::class, 'deleteGuest']);
 
-    // Guests routes (from the Guest model)
-    Route::get('/guests', fn() => response()->json(Guest::getGuests()));
+    // Hotels
+    Route::get('/hotels', [HospitalityController::class, 'getHotels']);
+    Route::post('/hotels', [HospitalityController::class, 'createHotel']);
+    Route::patch('/hotels/{id}', [HospitalityController::class, 'updateHotel']);
+    Route::delete('/hotels/{id}', [HospitalityController::class, 'deleteHotel']);
 
-    Route::post('/guests', function () {
-        $body = request()->json()->all();
-        $guest = Guest::createGuest($body['name'], $body['phone_number'], $body['address']);
-        return response()->json(['message' => 'Guest created successfully', 'data' => $guest], 201);
-    });
+    // Rooms
+    Route::get('/rooms', [HospitalityController::class, 'getRooms']);
+    Route::post('/rooms', [HospitalityController::class, 'createRoom']);
+    Route::patch('/rooms/{id}', [HospitalityController::class, 'updateRoom']);
+    Route::delete('/rooms/{id}', [HospitalityController::class, 'deleteRoom']);
 
-    Route::delete(
-        '/guests/{id}',
-        fn($id) =>
-        Guest::deleteGuestById($id)
-        ? response()->json(['message' => 'Guest deleted'])
-        : response()->json(['error' => 'Guest not found'], 404)
-    );
+    // Bookings
+    Route::get('/bookings', [HospitalityController::class, 'getBookings']);
+    Route::post('/bookings', [HospitalityController::class, 'createBooking']);
+    Route::patch('/bookings/{id}', [HospitalityController::class, 'updateBooking']);
+    Route::delete('/bookings/{id}', [HospitalityController::class, 'deleteBooking']);
 
-    Route::patch('/guests/{id}', function ($id) {
-        $body = request()->json()->all();
-        $guest = Guest::updateGuest(
-            $id,
-            $body['name'],
-            $body['email'],
-            $body['phone_number'] ?? null,
-            $body['address'] ?? null
-        );
-        return $guest
-            ? response()->json(['message' => 'Guest updated', 'data' => $guest])
-            : response()->json(['error' => 'Guest not found'], 404);
-    });
+    // Payments
+    Route::get('/payments', [HospitalityController::class, 'getPayments']);
+    Route::post('/payments', [HospitalityController::class, 'createPayment']);
+    Route::patch('/payments/{id}', [HospitalityController::class, 'updatePayment']);
+    Route::delete('/payments/{id}', [HospitalityController::class, 'deletePayment']);
 
-
-
-
-
-    // Hotels routes (from the Hotel model)
-    Route::get('/hotels', fn() => response()->json(Hotel::getHotels()));
-
-    Route::post('/hotels', function () {
-        $body = request()->json()->all();
-        $hotel = Hotel::createHotel(
-            $body['name'],
-            $body['location'],
-            $body['rating'],
-            $body['contact_info']
-        );
-        return response()->json(['message' => 'Hotel created successfully', 'data' => $hotel], 201);
-    });
-
-    Route::patch('/hotels/{id}', function ($id) {
-        $body = request()->json()->all();
-        $hotel = Hotel::updateHotel(
-            $id,
-            $body['name'],
-            $body['location'],
-            $body['rating'],
-            $body['contact_info']
-        );
-        return $hotel
-            ? response()->json(['message' => 'Hotel updated', 'data' => $hotel])
-            : response()->json(['error' => 'Hotel not found'], 404);
-    });
-
-    Route::delete('/hotels/{id}', function ($id) {
-        return Hotel::deleteHotelById($id)
-            ? response()->json(['message' => 'Hotel deleted'])
-            : response()->json(['error' => 'Hotel not found'], 404);
-    });
-
-
-
-
-
-
-    Route::post('/register', function () {
-        $body = request()->all();
-        $user = new User();
-        $user->name = $body['name'];
-        $user->email = $body['email'];
-        $user->password = bcrypt($body['password']);
-        $user->save();
-        // response user
-        return response()->json(['message' => 'User created', 'data' => $user]);
-    })->withoutMiddleware(EnsureTokenIsValid::class); #បន្ថែមកន្លែងនេះព្រោះការregisterមិនចាំបាច់ដាក់ចូលក្នុងmiddlewareទេ
-
-    Route::post('/login', function () {
-        $body = request()->all();
-        $email = $body['email'];
-        $password = $body['password'];
-
-        $user = User::where('email', $email)->first();
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-        if (!password_verify($password, $user->password)) {
-            return response()->json(['message' => 'Invalid either email or password'], 401);
-        }
-        // Sign JWT token
-        $payload = [
-            'sub' => $user->id,
-            'email' => $user->email,
-            'iat' => time(),
-            'exp' => time() + 60 * 60,
-        ];
-        $jwt = JWT::encode($payload, env('JWT_SECRET'), 'HS256');
-        return response()->json(['access_token' => $jwt]);
-    })->withoutMiddleware(EnsureTokenIsValid::class); #បន្ថែមកន្លែងនេះព្រោះការregisterមិនចាំបាច់ដាក់ចូលក្នុងmiddlewareទេ
-
-
-
-
-
-    // Delete user
-    Route::delete(
-        'users/{id}',
-        fn($id) =>
-        User::destroy($id)
-        ? response()->json(['message' => 'User deleted'])
-        : response()->json(['error' => 'User not found'], 404)
-    );
+    // Users
+    Route::delete('/users/{id}', [AuthController::class, 'deleteUser']);
 });
