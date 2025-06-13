@@ -127,6 +127,52 @@ A RESTful API for managing hotels, guests, rooms, bookings, and payments built w
 | PATCH  | /bookings/{id} | Update booking by ID |
 | DELETE | /bookings/{id} | Delete booking by ID |
 
+### Payment
+
+| Method | Endpoint       | Description          |
+| ------ | -------------- | -------------------- |
+| GET    | /payments      | List all payments    |
+| POST   | /payments      | Create a payment     |
+| PATCH  | /payments/{id} | Update payment by ID |
+| DELETE | /payments/{id} | Delete payment by ID |
+
+---
+
+### **Blade Form UI**
+
+```bash
+GET /create
+```
+Form for submitting: Guest info and Hotel info
+
+
+## 📊 ER Diagram
+
+🗺️ [View ER Diagram on Google Drive](https://drive.google.com/file/d/1oUE6cTxVnBtpp7juY-eemMnxeGCz6HkE/view?usp=sharing)
+
+---
+
+
+## 🎞️ Slide Presentation
+
+📽️ [View Hospitality API Slide Presentation on Google Slides](https://docs.google.com/presentation/d/11f-wGCsN4Tv5rmIdFwd5KUBUDgGaE9Fe/edit?slide=id.p1)
+
+You can click the link above to explore the project overview, problems solved, development challenges, and future plans in a visual format.
+
+
+
+## Testing
+
+To test the API locally, start the development server:
+
+```bash
+php -S 127.0.0.1:8888 -t public
+```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
 
 
 
