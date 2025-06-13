@@ -15,8 +15,8 @@ Route::get('/', function () {
 Route::get('/create', [HospitalityController::class, 'showGuestHotelForm'])->name('form.guesthotel');
 
 // Create routes for guests and hotels from blade form (ទាំងពីរនេះមិនទាន់ដំណើរការបានទេ)
-// Route::post('/guests', [HospitalityController::class, 'createGuest']);
-// Route::post('/hotels', [HospitalityController::class, 'createHotel']);
+Route::post('/guests', [HospitalityController::class, 'createGuest']);
+Route::post('/hotels', [HospitalityController::class, 'createHotel']);
 
 // Auth routes
 Route::post('/register', [AuthController::class, 'register'])->withoutMiddleware(EnsureTokenIsValid::class);
